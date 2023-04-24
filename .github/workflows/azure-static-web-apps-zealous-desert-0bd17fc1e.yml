@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - Assignment-1
+      - Assignment-2
     paths:
     - wordle-web/**
   pull_request:
