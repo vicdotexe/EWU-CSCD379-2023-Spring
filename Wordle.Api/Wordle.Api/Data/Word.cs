@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-//asdf
+
 namespace Wordle.Api.Data
 {
     public class Word
