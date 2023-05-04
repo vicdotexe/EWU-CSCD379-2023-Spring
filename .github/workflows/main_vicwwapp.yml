@@ -57,5 +57,5 @@ jobs:
         with:
           app-name: 'vicwwapp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6F0AE995515148A4BC0CC2BBB4BDE954 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_API }}
           package: .
