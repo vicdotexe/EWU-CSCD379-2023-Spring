@@ -9,7 +9,7 @@ on:
       - main
       - Assignment-3
       paths:
-        - Wordle.Api/**
+      - Wordle.Api/**
   workflow_dispatch:
 
 jobs:
