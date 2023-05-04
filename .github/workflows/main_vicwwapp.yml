@@ -8,6 +8,8 @@ on:
     branches:
       - main
       - Assignment-3
+      paths:
+        - Wordle.Api/**
   workflow_dispatch:
 
 jobs:
