@@ -1,12 +1,23 @@
 import { Word } from '@/scripts/word'
 import { WordsService } from './wordsService'
 import type { Letter } from './letter'
+import { ref } from 'vue';
 
 export enum WordleGameStatus {
   Active = 0,
   Won = 1,
   Lost = 2
 }
+
+const playerId = ref<string|null>(localStorage.getItem('userId'));
+const playerName = ref<string>("Guest");
+
+export const Player = {
+    GetId: () => playerId.value,
+    SetId: (id: string) => {localStorage.setItem('userId', id); playerId.value = id},
+    GetName: () => playerName.value,
+    SetName: (name: string) => playerName.value = name
+  }
 
 export class WordleGame {
   constructor(secretWord?: string, numberOfGuesses: number = 6) {
