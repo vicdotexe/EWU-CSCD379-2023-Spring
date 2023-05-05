@@ -36,7 +36,6 @@ jobs:
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
-          working-directory: ./Wordle.Api
 
   deploy:
     runs-on: ubuntu-latest
