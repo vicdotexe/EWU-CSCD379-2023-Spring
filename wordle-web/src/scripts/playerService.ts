@@ -1,35 +1,45 @@
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import Axios from 'axios';
 
-const playerId = ref<string|null>(localStorage.getItem('userId'));
-const playerName = ref<string>("Guest");
+const Id = ref<string|null>(localStorage.getItem('userId'));
+const Name = ref<string>(localStorage.getItem('userName') ?? 'Guest');
+
+const createPlayer = async() =>{
+  var response = await Axios.post('/player');
+  const { playerId, name }= response.data;
+  Id.value = playerId;
+  Name.value = name;
+  localStorage.setItem('userId', playerId)
+  localStorage.setItem('userName', name);
+}
+
+const getPlayer = async() =>{
+  Axios.get(`/player?id=${Id.value}`).then((response) => {
+      Name.value = response.data.name;
+      localStorage.setItem('userName', response.data.name ?? 'Guest');
+    }
+  ).catch(()=>{
+    createPlayer();
+  })
+}
+
+const ChangeNameAsync = async(name:string) => {
+  Name.value = name;
+  localStorage.setItem('userName', name ?? 'Guest');
+  return Axios.post(`/player/setname?playerid=${Id.value}&name=${name}`);
+};
+
+export const SetupAsync = async() => {
+  if (!Id.value){
+      await createPlayer();
+    } else {
+      await getPlayer();
+    }
+}
 
 export const Player = {
-    GetId: () => playerId.value,
-    SetId: (id: string) => {localStorage.setItem('userId', id); playerId.value = id},
-    GetName: () => playerName.value,
-    SetName: (name: string) => playerName.value = name
-  }
-
-  const CreatePlayer = async() =>{
-    var response = await Axios.post('/player');
-    var id = response.data.playerId;
-    Player.SetId(id);
-  }
-  
-  const SetPlayer = async() =>{
-    var response = await Axios.get(`/player?id=${Player.GetId()}`);
-    if (response.status == 200){
-      Player.SetName(response.data.name);
-    } else {
-      CreatePlayer();
-    }
-  }
-
-  export const SyncPlayerAsync = async() => {
-    if (!Player.GetId()){
-        await CreatePlayer();
-      } else {
-        await SetPlayer();
-      }
-  }
+  Id: computed(()=>Id.value),
+  Name: computed(()=>Name.value),
+  SetupAsync,
+  ChangeNameAsync
+}

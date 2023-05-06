@@ -56,11 +56,11 @@ namespace Wordle.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlayerId"));
 
-                    b.Property<double>("AverageAttempts")
-                        .HasColumnType("float");
-
-                    b.Property<int>("AverageSecondsPerGame")
+                    b.Property<int>("AverageAttempts")
                         .HasColumnType("int");
+
+                    b.Property<double>("AverageSecondsPerGame")
+                        .HasColumnType("float");
 
                     b.Property<int>("GameCount")
                         .HasColumnType("int");

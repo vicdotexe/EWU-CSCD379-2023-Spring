@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Wordle.Api.Data;
+using Wordle.Api.Dtos;
 using Wordle.Api.Services;
 
 namespace Wordle.Api.Controllers;
@@ -14,10 +15,17 @@ public class PlayerController : ControllerBase
         _ps = ps;
     }
 
-    [HttpGet()]
-    public async Task<Player?> Get(int id)
+    [HttpGet]
+    public async Task<ActionResult<PlayerDto>> Get(int id)
     {
-        return await _ps.GetPlayer(id);
+        Player? player = await _ps.GetPlayer(id);
+
+        if (player is not null)
+        {
+            return player.MapToDto();
+        }
+        return BadRequest();
+
     }
 
     [HttpGet("list")]
@@ -30,5 +38,11 @@ public class PlayerController : ControllerBase
     public async Task<Player> Post()
     {
         return await _ps.CreatePlayer();
+    }
+
+    [HttpPost("setname")]
+    public async Task<Player?> ChangeName(int playerId, string name)
+    {
+        return await _ps.ChangeName(playerId, name);
     }
 }

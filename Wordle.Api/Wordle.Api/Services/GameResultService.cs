@@ -12,10 +12,11 @@ namespace Wordle.Api.Services
             _db = db;
         }
 
-        public async Task SaveGameResult(GameResult result)
+        public async Task<GameResult> SaveGameResult(GameResult result)
         {
             _db.Add(result);
             await _db.SaveChangesAsync();
+            return result;
         }
 
         public async Task<IEnumerable<GameResult>> GetTopScores(int count = 10)

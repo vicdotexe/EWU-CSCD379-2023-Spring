@@ -1,23 +1,14 @@
 import { Word } from '@/scripts/word'
 import { WordsService } from './wordsService'
-import type { Letter } from './letter'
-import { ref } from 'vue';
+import { LetterStatus, type Letter } from './letter'
+import { Player } from './playerService'
+import Axios from 'axios';
 
 export enum WordleGameStatus {
   Active = 0,
   Won = 1,
   Lost = 2
 }
-
-const playerId = ref<string|null>(localStorage.getItem('userId'));
-const playerName = ref<string>("Guest");
-
-export const Player = {
-    GetId: () => playerId.value,
-    SetId: (id: string) => {localStorage.setItem('userId', id); playerId.value = id},
-    GetName: () => playerName.value,
-    SetName: (name: string) => playerName.value = name
-  }
 
 export class WordleGame {
   constructor(secretWord?: string, numberOfGuesses: number = 6) {
@@ -31,6 +22,7 @@ export class WordleGame {
   status = WordleGameStatus.Active
   guess!: Word
   numberOfGuesses = 6
+  startTime!: Date
 
   // // check length of guess
   //   if (this.letters.length !== secretWord.length) {
@@ -48,12 +40,16 @@ export class WordleGame {
     }
     this.guess = this.guesses[0]
     this.status = WordleGameStatus.Active
+    this.startTime = new Date();
   }
 
   submitGuess() {
     // put logic to win here.
     this.guess.check(this.secretWord)
 
+    if (this.guess.letters.every(l => l.status == LetterStatus.Correct)){
+      this.endGame(true);
+    }
     // Update the guessed letters
     for (const letter of this.guess.letters) {
       this.guessedLetters.push(letter)
@@ -66,6 +62,21 @@ export class WordleGame {
       this.guess = this.guesses[index + 1]
     } else {
       // The game is over
+      this.endGame(false);
     }
+  }
+
+  endGame(win: boolean){
+    const elapsedMs = (new Date()).getMilliseconds() - this.startTime.getMilliseconds();
+    const guesses = this.guesses.indexOf(this.guess);
+    
+    const gameResult = {
+      PlayerId: Player.Id.value,
+      Attempts: guesses,
+      Duration: elapsedMs,
+      Success: win
+    }
+
+    Axios.post('/gameresult', gameResult).then(response => console.log(response));
   }
 }

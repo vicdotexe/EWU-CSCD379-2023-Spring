@@ -34,5 +34,16 @@ namespace Wordle.Api.Services
             await _db.SaveChangesAsync();
             return player;
         }
+
+        public async Task<Player?> ChangeName(int playerId, string playerName)
+        {
+            var player = await _db.Players.FindAsync(playerId);
+            if (player is not null)
+            {
+                player.Name = playerName;
+                await _db.SaveChangesAsync();
+            }
+            return player;
+        }
     }
 }   

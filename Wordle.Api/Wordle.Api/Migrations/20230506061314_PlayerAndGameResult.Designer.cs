@@ -11,7 +11,7 @@ using Wordle.Api.Data;
 namespace Wordle.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230505045740_PlayerAndGameResult")]
+    [Migration("20230506061314_PlayerAndGameResult")]
     partial class PlayerAndGameResult
     {
         /// <inheritdoc />
@@ -59,11 +59,11 @@ namespace Wordle.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlayerId"));
 
-                    b.Property<double>("AverageAttempts")
-                        .HasColumnType("float");
-
-                    b.Property<int>("AverageSecondsPerGame")
+                    b.Property<int>("AverageAttempts")
                         .HasColumnType("int");
+
+                    b.Property<double>("AverageSecondsPerGame")
+                        .HasColumnType("float");
 
                     b.Property<int>("GameCount")
                         .HasColumnType("int");

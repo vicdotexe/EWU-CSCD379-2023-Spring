@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header class="d-flex justify-space-between">
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink> | <RouterLink to="/wordle">Wordle</RouterLink> |
@@ -8,6 +8,7 @@
       <v-btn @click="setInverseTheme"> Inverse Theme </v-btn>
       <v-btn @click="setDarkTheme"> Dark Theme </v-btn>
     </div>
+    Logged in as <ActiveUser/>
   </header>
 
   <RouterView />
@@ -15,6 +16,7 @@
 
 <script setup lang="ts">
 import { useTheme } from 'vuetify/lib/framework.mjs'
+import ActiveUser from './components/ActiveUser.vue'
 
 const theme = useTheme()
 

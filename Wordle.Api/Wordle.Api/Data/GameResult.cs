@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
+using Wordle.Api.Dtos;
 
 namespace Wordle.Api.Data;
 
@@ -21,4 +23,5 @@ public class GameResult
         score -= Duration / 2000;
         return score;
     }
+
 }
