@@ -10,11 +10,21 @@ export enum WordleGameStatus {
   Lost = 2
 }
 
+export interface GameResult {
+  playerId: number,
+  playerName?: string,
+  attempts: number,
+  duration: number,
+  success: boolean,
+  score?: number
+}
+
 export class WordleGame {
   constructor(secretWord?: string, numberOfGuesses: number = 6) {
     if (!secretWord) secretWord = WordsService.getRandomWord()
     this.numberOfGuesses = numberOfGuesses
     this.restartGame(secretWord)
+    
   }
   guessedLetters: Letter[] = []
   guesses = new Array<Word>()
@@ -22,7 +32,8 @@ export class WordleGame {
   status = WordleGameStatus.Active
   guess!: Word
   numberOfGuesses = 6
-  startTime!: Date
+  startTime!: number
+  onGameEnd: ((result:GameResult)=>void) | null = null;
 
   // // check length of guess
   //   if (this.letters.length !== secretWord.length) {
@@ -30,9 +41,10 @@ export class WordleGame {
   //     return
   //   }
 
-  async restartGame(secretWord: string, numberOfGuesses: number = 6) {
-    this.secretWord = secretWord
+  async restartGame(secretWord?: string | null, numberOfGuesses: number = 6) {
+    this.secretWord = secretWord || (await WordsService.getWordFromApi())
     this.guesses.splice(0)
+    this.guessedLetters.splice(0);
 
     for (let i = 0; i < numberOfGuesses; i++) {
       const word = new Word()
@@ -40,7 +52,7 @@ export class WordleGame {
     }
     this.guess = this.guesses[0]
     this.status = WordleGameStatus.Active
-    this.startTime = new Date();
+    this.startTime = Date.now();
   }
 
   submitGuess() {
@@ -66,9 +78,9 @@ export class WordleGame {
     }
   }
 
-  endGame(win: boolean){
-    const elapsedMs = (new Date()).getMilliseconds() - this.startTime.getMilliseconds();
-    const guesses = this.guesses.indexOf(this.guess);
+  async endGame(win: boolean){
+    const elapsedMs = Date.now() - this.startTime;
+    const guesses = this.guesses.indexOf(this.guess) + 1;
     
     const gameResult = {
       PlayerId: Player.Id.value,
@@ -77,6 +89,9 @@ export class WordleGame {
       Success: win
     }
 
-    Axios.post('/gameresult', gameResult).then(response => console.log(response));
+    const response = await Axios.post('/gameresult', gameResult);
+    if (this.onGameEnd){
+      this.onGameEnd(response.data as GameResult);
+    }
   }
 }

@@ -40,9 +40,14 @@ public class PlayerController : ControllerBase
         return await _ps.CreatePlayer();
     }
 
-    [HttpPost("setname")]
-    public async Task<Player?> ChangeName(int playerId, string name)
+    [HttpPut]
+    public async Task<ActionResult<PlayerDto?>> Put([FromBody] PlayerDto dto)
     {
-        return await _ps.ChangeName(playerId, name);
+        PlayerDto? player = await _ps.Update(dto);
+        if (player is not null)
+        {
+            return player;
+        }
+        return BadRequest();
     }
 }

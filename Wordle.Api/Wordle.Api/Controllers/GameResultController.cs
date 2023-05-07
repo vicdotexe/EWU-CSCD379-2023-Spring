@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Wordle.Api.Data;
+using Wordle.Api.Dtos;
 using Wordle.Api.Services;
 
 namespace Wordle.Api.Controllers
@@ -21,9 +22,20 @@ namespace Wordle.Api.Controllers
             return new List<GameResult>();
         }
         [HttpPost]
-        public async Task<ActionResult<GameResult>> Post(GameResult result)
+        public async Task<ActionResult<GameResultDto>> Post(GameResult result)
         {
-            return await _grs.SaveGameResult(result);
+            GameResultDto? dto = await _grs.SaveGameResult(result);
+            if (dto is not null)
+            {
+                return dto;
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("topscores")]
+        public async Task<IEnumerable<GameResultDto>> GetTopScores(int count = 10)
+        {
+            return await _grs.GetTopScores(count);
         }
     }
 }

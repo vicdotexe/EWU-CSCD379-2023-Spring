@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Wordle.Api.Data;
+using Wordle.Api.Dtos;
 
 namespace Wordle.Api.Services
 {
@@ -44,6 +45,18 @@ namespace Wordle.Api.Services
                 await _db.SaveChangesAsync();
             }
             return player;
+        }
+
+        public async Task<PlayerDto?> Update(PlayerDto dto)
+        {
+            var player = await _db.Players.FindAsync(dto.PlayerId);
+            if (player is not null)
+            {
+                player.Update(dto);
+                await _db.SaveChangesAsync();
+                return player.MapToDto();
+            }
+            return null;
         }
     }
 }   

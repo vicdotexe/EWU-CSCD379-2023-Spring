@@ -12,16 +12,20 @@ public class GameResult
     public Player? Player { get; set; }
     public int Attempts { get; set; }
     public double Duration { get; set; }
-    public double Score => CalculateScore();
+    public double Score { get; set; }
     public bool Success { get; set; }
 
-    private double CalculateScore()
+    public void CalculateScore()
     {
-        if (!Success) return 0;
+        if (!Success)
+        {
+            Score = 0;
+            return;
+        }
 
-        double score = 100 - (Attempts * 5);
-        score -= Duration / 2000;
-        return score;
+        double score = 100 - ((Attempts -1) * 5);
+        score -= Duration / 10000;
+        Score =  score;
     }
 
 }

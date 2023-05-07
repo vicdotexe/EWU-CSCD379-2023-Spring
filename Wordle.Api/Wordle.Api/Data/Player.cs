@@ -7,8 +7,8 @@ public class Player
     public int PlayerId { get; set; }
     public required string Name { get; set; }
     public int GameCount { get; set; }
-    public int AverageAttempts { get; set; }
-    public double AverageSecondsPerGame { get; set; }
+    public double AverageAttempts { get; set; }
+    public int AverageSecondsPerGame { get; set; }
     public ICollection<GameResult> GameResults { get; set; } = new List<GameResult>();
 
     public static void SeedPlayers(AppDbContext db)
@@ -38,12 +38,21 @@ public static class Extentions
         return dto;
     }
 
+    public static void Update(this Player player, PlayerDto dto)
+    {
+        if (dto.Name is not null)
+        {
+            player.Name = dto.Name;
+        }
+    }
+
     public static GameResultDto MapToDto(this GameResult gameResult)
     {
         GameResultDto dto = new()
         {
             GameResultId = gameResult.GameResultId,
             PlayerId = gameResult.PlayerId,
+            PlayerName = gameResult.Player?.Name,
             Attempts = gameResult.Attempts,
             Duration = gameResult.Duration,
             Score = gameResult.Score,

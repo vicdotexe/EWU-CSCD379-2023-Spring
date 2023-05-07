@@ -26,7 +26,7 @@ const getPlayer = async() =>{
 const ChangeNameAsync = async(name:string) => {
   Name.value = name;
   localStorage.setItem('userName', name ?? 'Guest');
-  return Axios.post(`/player/setname?playerid=${Id.value}&name=${name}`);
+  return Axios.put(`/player`, {playerId: Id.value,name: name});
 };
 
 export const SetupAsync = async() => {
@@ -41,5 +41,6 @@ export const Player = {
   Id: computed(()=>Id.value),
   Name: computed(()=>Name.value),
   SetupAsync,
-  ChangeNameAsync
+  ChangeNameAsync,
+  TypingName: ref(false)
 }

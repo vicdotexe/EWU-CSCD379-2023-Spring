@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Wordle.Api.Data;
+using Wordle.Api.Dtos;
 
 namespace Wordle.Api.Services
 {
@@ -12,20 +13,36 @@ namespace Wordle.Api.Services
             _db = db;
         }
 
-        public async Task<GameResult> SaveGameResult(GameResult result)
+        public async Task<GameResultDto?> SaveGameResult(GameResult result)
         {
-            _db.Add(result);
-            await _db.SaveChangesAsync();
-            return result;
+            Player? player = await _db.Players
+                .Where(p => p.PlayerId == result.PlayerId)
+                .Include(p => p.GameResults)
+                .FirstOrDefaultAsync();
+
+            if (player is not null)
+            {
+                result.CalculateScore();
+                player.GameResults.Add(result);
+                player.GameCount = player.GameResults.Count();
+                player.AverageSecondsPerGame = (int)(player.GameResults.Select(gr => gr.Duration).Average() / 1000);
+                player.AverageAttempts = player.GameResults.Select(gr => gr.Attempts).Average();
+                await _db.SaveChangesAsync();
+                return result.MapToDto();
+            }
+
+            return null;
         }
 
-        public async Task<IEnumerable<GameResult>> GetTopScores(int count = 10)
+        public async Task<IEnumerable<GameResultDto>> GetTopScores(int count = 10)
         {
-            return await _db.GameResults
+            IEnumerable<GameResult> gameResults = await _db.GameResults
+                .Where(gr => gr.Success)
                 .OrderByDescending(gr => gr.Score)
                 .Take(count)
                 .Include(gr => gr.Player)
                 .ToListAsync();
+            return gameResults.Select(gr => gr.MapToDto());
         }
     }
 }
